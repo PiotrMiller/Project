@@ -5,54 +5,25 @@ import java.sql.*;
  */
 public class ProductDao {
 
-    private Connection connection;
+    private Connection connection = JdbcConnector.getConnection();
 
-    private final static String DB_URL = "jdbc:mysql://localhost:3306/shopdb";
-    private final static String DB_USER_NAME = "root";
-    private final static String DB_DRIVER = "com.mysql.jdbc.Driver";
-    private final String DB_PASSWORD;
 
-    public ProductDao(String dbPassword) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-
-        Class.forName(DB_DRIVER).newInstance();
-        DB_PASSWORD = dbPassword;
-    }
-
-    private void connect() throws SQLException {
-        connection = DriverManager.getConnection(DB_URL, DB_USER_NAME, DB_PASSWORD);
-        if (!connection.isClosed()) {
-            System.out.println("Connected Successfully !");
-        } else {
-            throw new RuntimeException("Failed to connect to the database !");
-        }
-    }
-
-    private void disconnect() throws SQLException {
-        if (!connection.isClosed()) {
-            connection.close();
-            if (connection.isClosed()) {
-                System.out.println("Connection is Closed !");
-            } else {
-                throw new RuntimeException("Failed to disconnect from the database !");
-            }
-        }
-    }
 
     public void deleteProduct(int id) throws SQLException {
         try {
-            connect();
+            //connect();
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM products WHERE productID = ?");
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
         } finally {
-            disconnect();
+            //disconnect();
         }
     }
 
     public Product createProduct (String productName, double price, int typeId, int quantity, String productBrand) throws SQLException {
         Product product = new Product(productName, price, typeId,quantity,productBrand);
         try {
-            connect();
+            //connect();
             PreparedStatement preparedStatement = connection.prepareStatement("insert INTO products (ProductName, Price, TypeID, Quantity, ProductBrand) values (?,?,?,?,?);");
             preparedStatement.setString(1, productName);
             preparedStatement.setDouble(2, price);
@@ -66,7 +37,7 @@ public class ProductDao {
             product.setProductId(autoIncrementProductId);
             System.out.println(product.getProductId());
         } finally {
-            disconnect();
+            //disconnect();
         }
         return product;
     }
@@ -74,7 +45,7 @@ public class ProductDao {
     public Product getProduct(int id) throws SQLException {
         Product product;
         try {
-            connect();
+            //connect();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT ProductID, ProductName, Price, TypeID, Quantity, ProductBrand From products WHERE ProductID = (?)");
             preparedStatement.setInt(1, id);
             ResultSet result = preparedStatement.executeQuery();
@@ -89,12 +60,12 @@ public class ProductDao {
             product.setProductId(productID);
             System.out.printf("| ID: %-3d | Brand: %-10s | Name: %-50s | Price: %.2f |" + "\n", id, brand, name, price);
         } finally {
-            disconnect();
+            //disconnect();
         }
         return product;
     }
 
-    /**
+/**
     public Product updateProduct (Product product) throws SQLException {
 
             String name = product.getProductName();
@@ -103,6 +74,7 @@ public class ProductDao {
             int quantity = product.getQuantity();
             String brand = product.getProductBrand();
             int productId = product.getProductId();
+
 
         try {
             connect();
@@ -119,19 +91,19 @@ public class ProductDao {
         }
         return new Product(name, price, typeId, quantity, brand);
     }
-    */
+*/
 
     public void addNewProductType(String productType) throws SQLException {
-        connect();
+        //connect();
         PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO product_types (TypeName) VALUES (?)");
         preparedStatement.setString(1,productType);
         preparedStatement.executeUpdate();
-        disconnect();
+        //disconnect();
     }
 
     public void printAllProductsFromProductsTable() throws SQLException {
 
-        connect();
+        //connect();
         PreparedStatement preparedStatement = connection.prepareStatement("Select ProductID, ProductBrand, ProductName, Price, TypeID, Quantity From products");
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {
@@ -144,6 +116,6 @@ public class ProductDao {
             System.out.printf("| ID: %-3d | Brand: %-10s | Name: %-45s | Price: %.2f | Quantity: %-3d | TypeID: %-3d" + "\n", id, brand, name, price, quantity, typeID);
         }
         result.close();
-        disconnect();
+        //disconnect();
     }
 }
