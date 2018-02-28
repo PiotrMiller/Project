@@ -3,7 +3,6 @@
  */
 public class Product {
 
-
     public Product(String productName, double price, int typeId, int quantity, String productBrand) {
         this.productName = productName;
         this.price = price;
@@ -19,10 +18,11 @@ public class Product {
     private int quantity;
     private String productBrand;
 
-    public void setProductId(int productId){
+    public void setProductId(int productId) {
         this.productId = productId;
     }
-    public int getProductId(){
+
+    public int getProductId() {
         return productId;
     }
 
@@ -46,5 +46,3 @@ public class Product {
         return productBrand;
     }
 }
-
-
