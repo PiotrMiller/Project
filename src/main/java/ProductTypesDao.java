@@ -13,46 +13,52 @@ public class ProductTypesDao {
      */
 
     public boolean isProductTypeExistsByName(String typeName) throws SQLException {
-        Connection connection = JdbcConnector.connect();
+        Connection connection = JdbcConnector.getCconnection();
         boolean result = false;
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT TypeName FROM product_types WHERE TypeName = \"" + typeName.toLowerCase() + "\"");
         ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            String name = resultSet.getString("TypeName");
-            if (name.toLowerCase().equals(typeName.toLowerCase())) {
-                System.out.println("\"" + typeName + "\" product type already exist in database");
-                result = true;
-            }
-            JdbcConnector.disconnect();
-        } else
-            System.out.println("Product type \"" + typeName + "\" doesn't exist in database");
-        return result;
+        try {
+            if (resultSet.next()) {
+                String name = resultSet.getString("TypeName");
+                if (name.toLowerCase().equals(typeName.toLowerCase())) {
+                    System.out.println("\"" + typeName + "\" product type already exist in database");
+                    result = true;
+                }
+            } else
+                System.out.println("Product type \"" + typeName + "\" doesn't exist in database");
+            return result;
+        } finally {
+            preparedStatement.close();
+        }
     }
 
     public boolean isProductTypeExistsById(int id) throws SQLException {
-        Connection connection = JdbcConnector.connect();
+        Connection connection = JdbcConnector.getCconnection();
         boolean result = false;
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT TypeID FROM product_types WHERE TypeID = " + id);
         ResultSet resultSet = preparedStatement.executeQuery();
-        if (!resultSet.next()) {
-            System.out.println("Product type with id: \"" + id + "\" doesn't exist in database");
-            JdbcConnector.disconnect();
-        } else {
-            result = true;
+        try {
+            if (!resultSet.next()) {
+                System.out.println("Product type with id: \"" + id + "\" doesn't exist in database");
+            } else {
+                result = true;
+            }
+            return result;
+        } finally {
+            preparedStatement.close();
         }
-        return result;
     }
 
     public void addNewProductType(String productType) throws SQLException {
+        Connection connection = JdbcConnector.getCconnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO product_types (TypeName) VALUES (\"" + productType + "\")");
         try {
             if (!isProductTypeExistsByName(productType)) {
-                Connection connection = JdbcConnector.connect();
-                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO product_types (TypeName) VALUES (\"" + productType + "\")");
                 preparedStatement.executeUpdate();
                 System.out.println("New product type \"" + productType + "\" is successfully added to the database.");
             }
         } finally {
-            JdbcConnector.disconnect();
+            preparedStatement.close();
         }
     }
 
@@ -69,40 +75,45 @@ public class ProductTypesDao {
      * @throws SQLException
      */
     public String getProductTypeName(int id) throws SQLException {
-        Connection connection = JdbcConnector.connect();
+        Connection connection = JdbcConnector.getCconnection();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT TypeName FROM product_types WHERE TypeID = ?");
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
+        try {
+            if (!resultSet.next()) {
+                throw new SQLException("There is no product type with id: " + id + " in database.");
 
-        if (!resultSet.next()) {
-            JdbcConnector.disconnect();
-            throw new SQLException("There is no product type with id: " + id + " in database.");
-
-        } else {
-            String productTypeName = resultSet.getString("TypeName");
-            JdbcConnector.disconnect();
-            return productTypeName;
+            } else {
+                String productTypeName = resultSet.getString("TypeName");
+                return productTypeName;
+            }
+        } finally {
+            preparedStatement.close();
         }
     }
 
     public int getNumberOfProductsOfSpecificType(int id) throws SQLException {
+        Connection connection = JdbcConnector.getCconnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(*) FROM products WHERE TypeID = " + id);
         int count = 0;
-        if (isProductTypeExistsById(id)) {
-            Connection connection = JdbcConnector.connect();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(*) FROM products WHERE TypeID = " + id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            count = resultSet.getInt(1);
+        try {
+            if (isProductTypeExistsById(id)) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+                resultSet.next();
+                count = resultSet.getInt(1);
+                return count;
+            }
             return count;
+        } finally {
+            preparedStatement.close();
         }
-        return count;
     }
 
     public void deleteProductType(int id) throws SQLException {
+        Connection connection = JdbcConnector.getCconnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM product_types WHERE TypeID = ?");
         try {
-            Connection connection = JdbcConnector.connect();
             String typeName = getProductTypeName(id);
-            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM product_types WHERE TypeID = ?");
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
             System.out.println("Product type \"" + typeName + "\" is successfully deleted.");
@@ -113,24 +124,26 @@ public class ProductTypesDao {
             System.out.println("You can't delete product type \"" + typeName + "\", because you have " + numberOfProducts + " products of that type in your database !!");
 
         } finally {
-            JdbcConnector.disconnect();
+            preparedStatement.close();
         }
     }
 
     public void updateProductType(int id, String productTypeName) throws SQLException {
-        Connection connection = JdbcConnector.connect();
+        Connection connection = JdbcConnector.getCconnection();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT TypeName FROM product_types WHERE TypeID = ?");
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
-        if (!resultSet.next()) {
-            JdbcConnector.disconnect();
-            throw new SQLException("There is no record with id: " + id + " in database.");
-        } else {
-            String oldProductTypeName = resultSet.getString("TypeName");
-            preparedStatement = connection.prepareStatement("UPDATE product_types SET TypeName =(\"" + productTypeName + "\") WHERE TypeID = (\"" + id + "\")");
-            preparedStatement.executeUpdate();
-            System.out.println("Product type name with ID \"" + id + "\" updeted successfully, from \"" + oldProductTypeName + "\" to \"" + productTypeName + "\".");
-            JdbcConnector.disconnect();
+        try {
+            if (!resultSet.next()) {
+                throw new SQLException("There is no record with id: " + id + " in database.");
+            } else {
+                String oldProductTypeName = resultSet.getString("TypeName");
+                preparedStatement = connection.prepareStatement("UPDATE product_types SET TypeName =(\"" + productTypeName + "\") WHERE TypeID = (\"" + id + "\")");
+                preparedStatement.executeUpdate();
+                System.out.println("Product type name with ID \"" + id + "\" updeted successfully, from \"" + oldProductTypeName + "\" to \"" + productTypeName + "\".");
+            }
+        } finally {
+            preparedStatement.close();
         }
     }
 }
