@@ -7,7 +7,7 @@ public class ProductsDao {
 
     public Product createProduct(String productName, double price, int typeId, int quantity, String productBrand) throws SQLException {
         Product product = new Product(productName, price, typeId, quantity, productBrand);
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO products (ProductName, Price, TypeID, Quantity, ProductBrand) values (?,?,?,?,?);");
         try {
             preparedStatement.setString(1, productName);
@@ -28,7 +28,7 @@ public class ProductsDao {
     }
 
     public void deleteProduct(int id) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM products WHERE ProductID = ?");
         try {
             if (isProductExists(id)) {
@@ -44,7 +44,7 @@ public class ProductsDao {
 
     public Product getProduct(int id) throws SQLException {
         Product product;
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT ProductID, ProductName, Price, TypeID, Quantity, ProductBrand From products WHERE ProductID = (?)");
         preparedStatement.setInt(1, id);
         ResultSet result = preparedStatement.executeQuery();
@@ -70,7 +70,7 @@ public class ProductsDao {
     }
 
     public boolean isProductExists(int id) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         boolean result = false;
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT ProductID FROM products WHERE ProductID = \"" + id + "\"");
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -89,7 +89,7 @@ public class ProductsDao {
 
 
     public void updateProduct(int productId, String name, double price, int typeId, int quantity, String brand) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("UPDATE products SET ProductName = ?, Price = ?, TypeID = ?, Quantity = ?, ProductBrand= ? WHERE ProductID = ?");
         try {
             if (isProductExists(productId)) {
@@ -112,7 +112,7 @@ public class ProductsDao {
 
     public void printAllProductsFromProductsTable() throws SQLException {
 
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("Select ProductID, ProductBrand, ProductName, Price, TypeID, Quantity From products");
         ResultSet result = preparedStatement.executeQuery();
         try {

@@ -1,6 +1,7 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
 /**
  * Created by Piotr on 26.02.2018.
  */
@@ -27,8 +28,7 @@ public class JdbcConnector {
         }
     }
 
-
-    public static Connection getCconnection() {
+    public static Connection getConnection() {
         return connection;
     }
 }

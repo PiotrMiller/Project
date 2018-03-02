@@ -1,5 +1,6 @@
 import java.sql.SQLException;
 
+
 /**
  * Created by Piotr on 24.02.2018.
  */
@@ -9,7 +10,7 @@ public class MainTest {
         ProductsDao productDao = new ProductsDao();
         //productDao.getProduct(18);
         //productDao.printAllProductsFromProductsTable();
-        //productDao.updateProduct(18,"coś", 123.456, 16,12,"Jakiś Dobry");
+        productDao.updateProduct(13,"coś", 123.456, 16,12,"Jakiś Dobry");
         //productDao.deleteProduct(18);
         //productDao.createProduct("telewizor", 123.456, 16, 1, "SuperTV");
         //productDao.isProductExists(22);
@@ -23,7 +24,7 @@ public class MainTest {
         //productTypesDao.updateProductType(16,"TV");
         //System.out.println(productTypesDao.isProductTypeExistsById(4));
         //System.out.println(productTypesDao.getNumberOfProductsOfSpecificType(2));
-        productTypesDao.deleteProductType(2);
+        //productTypesDao.deleteProductType(2);
 
     }
 }

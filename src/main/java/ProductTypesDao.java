@@ -13,7 +13,7 @@ public class ProductTypesDao {
      */
 
     public boolean isProductTypeExistsByName(String typeName) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         boolean result = false;
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT TypeName FROM product_types WHERE TypeName = \"" + typeName.toLowerCase() + "\"");
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -33,7 +33,7 @@ public class ProductTypesDao {
     }
 
     public boolean isProductTypeExistsById(int id) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         boolean result = false;
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT TypeID FROM product_types WHERE TypeID = " + id);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -50,7 +50,7 @@ public class ProductTypesDao {
     }
 
     public void addNewProductType(String productType) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO product_types (TypeName) VALUES (\"" + productType + "\")");
         try {
             if (!isProductTypeExistsByName(productType)) {
@@ -75,7 +75,7 @@ public class ProductTypesDao {
      * @throws SQLException
      */
     public String getProductTypeName(int id) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT TypeName FROM product_types WHERE TypeID = ?");
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -93,7 +93,7 @@ public class ProductTypesDao {
     }
 
     public int getNumberOfProductsOfSpecificType(int id) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(*) FROM products WHERE TypeID = " + id);
         int count = 0;
         try {
@@ -110,7 +110,7 @@ public class ProductTypesDao {
     }
 
     public void deleteProductType(int id) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM product_types WHERE TypeID = ?");
         try {
             String typeName = getProductTypeName(id);
@@ -129,7 +129,7 @@ public class ProductTypesDao {
     }
 
     public void updateProductType(int id, String productTypeName) throws SQLException {
-        Connection connection = JdbcConnector.getCconnection();
+        Connection connection = JdbcConnector.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT TypeName FROM product_types WHERE TypeID = ?");
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
