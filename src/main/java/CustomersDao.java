@@ -8,7 +8,27 @@ import java.sql.SQLException;
 /**
  * Created by Piotr on 07.03.2018.
  */
-public class CustomersDao {
+public class CustomersDao implements CrudDao<Customer> {
+
+    @Override
+    public void create(Customer customer) {
+
+    }
+
+    @Override
+    public Customer get(int id) {
+        return null;
+    }
+
+    @Override
+    public Customer update(Customer customer) {
+        return null;
+    }
+
+    @Override
+    public void delete(int id) {
+
+    }
 
     public Customer createNewCustomer(String firstName, String lastName, String address, String city, int postCode, String email, int telephone) throws SQLException {
         Customer customer = new Customer(firstName, lastName, address, city, postCode, email, telephone);
