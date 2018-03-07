@@ -12,10 +12,23 @@ public class JdbcConnector {
     private final static String DB_DRIVER = "com.mysql.jdbc.Driver";
     private final static String DB_PASSWORD = "MySQLPassword";
 
+    private static Connection connection;
 
-    public static Connection getConnection() throws SQLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Class.forName(DB_DRIVER).newInstance();
-        Connection connection = DriverManager.getConnection(DB_URL, DB_USER_NAME, DB_PASSWORD);
+    static {
+        try {
+            connection = DriverManager.getConnection(DB_URL, DB_USER_NAME, DB_PASSWORD);
+            try {
+                Class.forName(DB_DRIVER);
+                System.out.println("\n" + "Connected to the database successfully." + "\n");
+            } catch (ClassNotFoundException ex) {
+                System.out.println("\n" + "Driver class not found." + "\n");
+            }
+        } catch (SQLException ex) {
+            System.out.println("\n" + "Failed to create a database connection." + "\n");
+        }
+    }
+
+    public static Connection getConnection() {
         return connection;
     }
 }
