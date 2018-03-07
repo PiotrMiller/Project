@@ -5,7 +5,27 @@ import java.sql.*;
 /**
  * Created by Piotr on 23.02.2018.
  */
-public class ProductsDao {
+public class ProductsDao implements CrudDao<Product> {
+
+    @Override
+    public int create(Product product) {
+        return 0;
+    }
+
+    @Override
+    public Product get(int id) {
+        return null;
+    }
+
+    @Override
+    public Product update(Product product) {
+        return null;
+    }
+
+    @Override
+    public void delete(int id) {
+
+    }
 
     public Product createProduct(String productBrand, String productName, float price, int typeId, int quantity) throws SQLException {
         Product product = new Product(productName, price, typeId, quantity, productBrand);

@@ -11,8 +11,8 @@ import java.sql.SQLException;
 public class CustomersDao implements CrudDao<Customer> {
 
     @Override
-    public void create(Customer customer) {
-
+    public int create(Customer customer) {
+        return 0;
     }
 
     @Override

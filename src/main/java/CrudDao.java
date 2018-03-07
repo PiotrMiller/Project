@@ -1,6 +1,6 @@
 public interface CrudDao<T> {
 
-    void create(T t);
+    int create(T t);
 
     T get(int id);
 
