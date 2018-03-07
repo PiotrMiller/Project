@@ -3,7 +3,7 @@
  */
 public class Product {
 
-    public Product(String productName, double price, int typeId, int quantity, String productBrand) {
+    public Product(String productName, float price, int typeId, int quantity, String productBrand) {
         this.productName = productName;
         this.price = price;
         this.typeId = typeId;
@@ -13,7 +13,7 @@ public class Product {
 
     private int productId;
     private String productName;
-    private double price;
+    private float price;
     private int typeId;
     private int quantity;
     private String productBrand;
@@ -30,7 +30,7 @@ public class Product {
         return productName;
     }
 
-    public double getPrice() {
+    public float getPrice() {
         return price;
     }
 
