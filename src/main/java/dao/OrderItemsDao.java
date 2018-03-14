@@ -1,9 +1,7 @@
 package dao;
 
-import classes.Order;
 import classes.OrderItem;
 import db.JdbcConnector;
-import sun.plugin.javascript.JSClassLoader;
 
 import java.sql.*;
 
