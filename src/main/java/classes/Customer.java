@@ -1,9 +1,11 @@
+package classes;
+
 /**
  * Created by Piotr on 06.03.2018.
  */
 public class Customer {
 
-    public Customer(String firstName, String lastName, String address, String city, int postCode, String email, int telephone){
+    public Customer(String firstName, String lastName, String address, String city, int postCode, String email, int telephone) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
