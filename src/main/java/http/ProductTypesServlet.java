@@ -1,6 +1,7 @@
 package http;
 
 import classes.ProductType;
+import dao.ProductTypesDao;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -22,10 +23,8 @@ public class ProductTypesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ServletException, IOException {
 
-        List<ProductType> productTypes = new ArrayList<>();
-        productTypes.add(new ProductType("Typ Pierwszy"));
-        productTypes.add(new ProductType("Typ Drugi"));
-        productTypes.add(new ProductType("Typ Trzeci"));
+        ProductTypesDao ptd = new ProductTypesDao();
+        List<ProductType> productTypes = ptd.getAll();
         httpRequest.setAttribute("productTypes", productTypes);
 
         String nextJSP = "/jsp/product-types.jsp";
