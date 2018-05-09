@@ -4,6 +4,8 @@ import classes.ProductType;
 import db.JdbcConnector;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Piotr on 27.02.2018.
@@ -95,6 +97,29 @@ public class ProductTypesDao implements CrudDao<ProductType> {
                 ex.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public List<ProductType> getAll() {
+        List<ProductType> productTypesList = new ArrayList<>();
+        Connection connection = JdbcConnector.getConnection();
+
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT type_id, type_name FROM product_types");
+                ResultSet resultSet = preparedStatement.executeQuery()
+        ) {
+            while (resultSet.next()) {
+                int typeId = resultSet.getInt("type_id");
+                String typeName = resultSet.getString("type_name");
+
+                ProductType productType = new ProductType(typeName);
+                productType.setProductTypeId(typeId);
+                productTypesList.add(productType);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return productTypesList;
     }
 
     private PreparedStatement createPSForGetProductType(Connection connection, int id) throws SQLException {

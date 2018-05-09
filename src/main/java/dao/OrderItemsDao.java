@@ -4,6 +4,8 @@ import classes.OrderItem;
 import db.JdbcConnector;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Piotr on 07.03.2018.
@@ -64,14 +66,18 @@ public class OrderItemsDao implements CrudDao <OrderItem> {
                 PreparedStatement preparedStatement = createPSforGet(connection, id);
                 ResultSet resultSet = preparedStatement.executeQuery()
         ) {
-            int orderItemsId = resultSet.getInt("order_items_id");
-            int orderId = resultSet.getInt("order_id");
-            int productId = resultSet.getInt("product_id");
-            int quantity = resultSet.getInt("quantity");
-            orderItem = new OrderItem(orderId, productId, quantity);
-            orderItem.setOrderItemId(orderItemsId);
-            System.out.printf("| Order Items ID: %-3d | Order ID: %-3d | ProductId ID: %-3d | Quantity: %-3d |" + "\n", orderItemsId, orderId, productId, quantity);
-        } catch (SQLException ex) {
+            if (!resultSet.next()) {
+                System.out.println("There is no order with id: " + id + " in database.");
+            } else {
+                int orderItemsId = resultSet.getInt("order_items_id");
+                int orderId = resultSet.getInt("order_id");
+                int productId = resultSet.getInt("product_id");
+                int quantity = resultSet.getInt("quantity");
+                orderItem = new OrderItem(orderId, productId, quantity);
+                orderItem.setOrderItemId(orderItemsId);
+                //System.out.printf("| Order Items ID: %-3d | Order ID: %-3d | ProductId ID: %-3d | Quantity: %-3d |" + "\n", orderItemsId, orderId, productId, quantity);
+            }
+        }catch (SQLException ex) {
             ex.printStackTrace();
         }
         return orderItem;
@@ -82,7 +88,7 @@ public class OrderItemsDao implements CrudDao <OrderItem> {
         Connection connection = JdbcConnector.getConnection();
         OrderItem updatedOrderItem = null;
         try (
-                PreparedStatement preparedStatement = connection.prepareStatement("UPDATE orders SET order_id = ?, product_id = ?, quantity = ?  WHERE order_items_id = ?")
+                PreparedStatement preparedStatement = connection.prepareStatement("UPDATE order_items SET order_id = ?, product_id = ?, quantity = ?  WHERE order_items_id = ?")
         ) {
             if (get(id) != null) {
                 preparedStatement.setInt(1, orderItem.getOrderId());
@@ -105,7 +111,7 @@ public class OrderItemsDao implements CrudDao <OrderItem> {
     public void delete(int id) {
         Connection connection = db.JdbcConnector.getConnection();
         try (
-                PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM order_items WHERE order_id = ?");
+                PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM order_items WHERE order_items_id = ?")
         ) {
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
@@ -113,6 +119,32 @@ public class OrderItemsDao implements CrudDao <OrderItem> {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public List<OrderItem> getAll() {
+
+        List<OrderItem> orderItemsList = new ArrayList<>();
+        Connection connection = JdbcConnector.getConnection();
+
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT order_items_id, order_id, product_id, quantity FROM order_items");
+                ResultSet resultSet = preparedStatement.executeQuery()
+        ) {
+            while (resultSet.next()) {
+                int orderItemsId = resultSet.getInt("order_items_id");
+                int orderId = resultSet.getInt("order_id");
+                int productId = resultSet.getInt("product_id");
+                int quantity = resultSet.getInt("quantity");
+
+                OrderItem orderItem = new OrderItem(orderId,productId,quantity);
+                orderItem.setOrderItemId(orderItemsId);
+                orderItemsList.add(orderItem);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return orderItemsList;
     }
 
     private PreparedStatement createPSforGet(Connection connection, int id) throws SQLException {

@@ -4,6 +4,8 @@ import classes.Customer;
 import db.JdbcConnector;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Piotr on 07.03.2018.
@@ -118,6 +120,35 @@ public class CustomersDao implements CrudDao <Customer> {
             ex.printStackTrace();
         }
     }
+
+    @Override
+    public List<Customer> getAll() {
+            List<Customer> CustomerList = new ArrayList<>();
+            Connection connection = JdbcConnector.getConnection();
+
+            try (
+                    PreparedStatement preparedStatement = connection.prepareStatement("SELECT customer_id, first_name, last_name, address, city, post_code, email, telephone FROM customers");
+                    ResultSet resultSet = preparedStatement.executeQuery()
+            ) {
+                while (resultSet.next()) {
+                    int customerId = resultSet.getInt("customer_id");
+                    String firstName = resultSet.getString("first_name");
+                    String lastName = resultSet.getString("last_name");
+                    String address = resultSet.getString("address");
+                    String city = resultSet.getString("city");
+                    int postCode = resultSet.getInt("post_code");
+                    String email = resultSet.getString("email");
+                    int telephone = resultSet.getInt("telephone");
+
+                    Customer customer = new Customer(firstName,lastName,address,city,postCode,email,telephone);
+                    customer.setCustomerId(customerId);
+                    CustomerList.add(customer);
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return CustomerList;
+        }
 
     private PreparedStatement createPSForGet(Connection connection, int id) throws SQLException {
         String sqlQuery = "SELECT customer_id, first_name, last_name, address, city, post_code, email, telephone From customers WHERE customer_id = ?";

@@ -3,6 +3,8 @@ import classes.*;
 import dao.*;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class DatabaseIntegrationTest {
@@ -46,6 +48,11 @@ public class DatabaseIntegrationTest {
 
         // read and find if deleted
         assertEquals(null, crudDao.get(productId));
+
+//        List<Product> products = crudDao.getAll();
+//        for(Product p : products){
+//            System.out.println(p.getProductId() + " " + p.getProductBrand() + p.getProductName());
+//        }
     }
 
     @Test
@@ -79,6 +86,11 @@ public class DatabaseIntegrationTest {
 
         // read and find if deleted
         assertEquals(null, crudDao.get(productTypeId));
+
+//        List<ProductType> productTypes = crudDao.getAll();
+//        for(ProductType pt : productTypes){
+//            System.out.println(pt.getProductTypeId() + " " + pt.getProductTypeName());
+//        }
     }
 
 
@@ -125,6 +137,12 @@ public class DatabaseIntegrationTest {
 
         // read and find if deleted
         assertEquals(null, crudDao.get(customerId));
+
+//        List<Customer> customers = crudDao.getAll();
+//        for(Customer c : customers){
+//            System.out.println(c.getCustomerId() + " " + c.getFirstName() + " " + c.getLastName());
+//        }
+
     }
 
     @Test
@@ -158,6 +176,11 @@ public class DatabaseIntegrationTest {
 
         // read and find if deleted
         assertEquals(null, crudDao.get(orderId));
+
+//        List<Order> ordersList = crudDao.getAll();
+//        for(Order o : ordersList){
+//            System.out.println(o.getOrderId() + " " + o.getCustomerId());
+//        }
     }
 
     @Test
@@ -166,26 +189,45 @@ public class DatabaseIntegrationTest {
         CrudDao<OrderItem> crudDao = new OrderItemsDao();
 
         // data
-        OrderItem insertOrderItem = new OrderItem(4, 20, 5);
+        OrderItem insertOrderItem = new OrderItem(5, 39, 1);
+        OrderItem orderItemForUpdate = new OrderItem(4, 25, 1);
 
         // insert and find ID
         int orderItemId = crudDao.create(insertOrderItem);
+
         assertEquals(orderItemId, insertOrderItem.getOrderItemId());
 
 
         // read and compare with data (using assertions)
-        //crudDao.get(4);
+        OrderItem orderItem = crudDao.get(orderItemId);
+
+        assertEquals(orderItem.getOrderItemId(), insertOrderItem.getOrderItemId());
+        assertEquals(orderItem.getOrderId(), insertOrderItem.getOrderId());
+        assertEquals(orderItem.getProductId(), insertOrderItem.getProductId());
+        assertEquals(orderItem.getQuantity(), insertOrderItem.getQuantity());
 
         // update
+
+        crudDao.update(orderItemId, orderItemForUpdate);
 
 
         // read and check if updated successfully
 
+        assertEquals(crudDao.get(orderItemId).getProductId(), orderItemForUpdate.getProductId());
+        assertEquals(crudDao.get(orderItemId).getOrderId(), orderItemForUpdate.getOrderId());
+        assertEquals(crudDao.get(orderItemId).getQuantity(), orderItemForUpdate.getQuantity());
 
         // delete
         crudDao.delete(orderItemId);
 
         // read and find if deleted
+
+        assertEquals(null, crudDao.get(orderItemId));
+
+//        List<OrderItem> orderItemsList = crudDao.getAll();
+//        for(OrderItem oi : orderItemsList){
+//            System.out.println(oi.getOrderItemId() + " " + oi.getOrderId() + " " + oi.getProductId() + " " + oi.getQuantity());
+//        }
 
     }
 }

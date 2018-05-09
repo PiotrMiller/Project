@@ -4,6 +4,8 @@ import classes.Order;
 import db.JdbcConnector;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Piotr on 07.03.2018.
@@ -95,6 +97,29 @@ public class OrdersDao implements CrudDao <Order> {
             ex.printStackTrace();
         }
     }
+
+    @Override
+    public List<Order> getAll() {
+            List<Order> ordersList = new ArrayList<>();
+            Connection connection = JdbcConnector.getConnection();
+
+            try (
+                    PreparedStatement preparedStatement = connection.prepareStatement("SELECT order_id, customer_id FROM orders");
+                    ResultSet resultSet = preparedStatement.executeQuery()
+            ) {
+                while (resultSet.next()) {
+                    int orderId = resultSet.getInt("order_id");
+                    int customerId = resultSet.getInt("customer_id");
+
+                    Order customer = new Order(customerId);
+                    customer.setOrderId(orderId);
+                    ordersList.add(customer);
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return ordersList;
+        }
 
     private PreparedStatement createPSforGet(Connection connection, int id) throws SQLException {
         String sqlQuery = "SELECT order_id, customer_id From orders WHERE order_id = ?";

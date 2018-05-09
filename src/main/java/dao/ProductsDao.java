@@ -4,6 +4,8 @@ import classes.Product;
 import db.JdbcConnector;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Piotr on 23.02.2018.
@@ -110,6 +112,34 @@ public class ProductsDao implements CrudDao<Product> {
         }
     }
 
+    @Override
+    public List<Product> getAll() {
+        List<Product> productsList = new ArrayList<>();
+        Connection connection = JdbcConnector.getConnection();
+
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT product_id, product_brand, product_name, price, type_id, quantity FROM products");
+                ResultSet resultSet = preparedStatement.executeQuery()
+        ) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("product_id");
+                String brand = resultSet.getString("product_brand");
+                String name = resultSet.getString("product_name");
+                float price = resultSet.getFloat("price");
+                int typeID = resultSet.getInt("type_id");
+                int quantity = resultSet.getInt("quantity");
+
+                Product product = new Product(brand, name, price, typeID, quantity);
+                product.setProductId(id);
+                productsList.add(product);
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return productsList;
+    }
+
     private PreparedStatement createPSforGet(Connection connection, int id) throws SQLException {
         String sqlQuery = "SELECT product_id, product_brand, product_name, price, type_id, quantity From products WHERE product_id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
@@ -135,7 +165,7 @@ public class ProductsDao implements CrudDao<Product> {
                 int id = result.getInt("product_id");
                 String brand = result.getString("product_brand");
                 String name = result.getString("product_name");
-                double price = result.getFloat("price");
+                float price = result.getFloat("price");
                 int typeID = result.getInt("type_id");
                 int quantity = result.getInt("quantity");
                 System.out.printf("| ID: %-3d | Brand: %-10s | Name: %-70s | Price: %-8.2f | Quantity: %-3d | TypeID: %-3d" + "\n", id, brand, name, price, quantity, typeID);
